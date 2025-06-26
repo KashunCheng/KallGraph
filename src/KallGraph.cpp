@@ -8,6 +8,7 @@
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/SystemUtils.h"
 
+#include <condition_variable>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>

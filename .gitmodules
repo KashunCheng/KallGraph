@@ -1,0 +1,6 @@
+[submodule "mlta"]
+	path = mlta
+	url = git@github.com:KashunCheng/mlta.git
+[submodule "examples/lua"]
+	path = examples/lua
+	url = git@github.com:KashunCheng/lua.git

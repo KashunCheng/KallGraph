@@ -21,7 +21,7 @@ if(NOT COMMAND add_llvm_library)
         # add -std=gnu++14
         set(CMAKE_CXX_EXTENSIONS ON)
 
-        set(COMMON_FLAGS "-fPIC -Werror -Wall")
+        set(COMMON_FLAGS "-fPIC -Wall")
 
         if(CMAKE_BUILD_TYPE MATCHES "Debug")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS} -O0 -fno-rtti")
@@ -55,23 +55,12 @@ else()
         set(IN_SOURCE_BUILD 1)
 endif()
 
-if (DEFINED Z3_DIR)
-    set(ENV{Z3_DIR} "${Z3_DIR}")
-endif()
-find_library(Z3_LIBRARIES NAMES libz3.a
-                          HINTS $ENV{Z3_DIR}
-                          PATH_SUFFIXES lib bin)
-find_path(Z3_INCLUDES NAMES z3++.h
-                      HINTS $ENV{Z3_DIR}
-                      PATH_SUFFIXES include z3)
-if(NOT Z3_LIBRARIES OR NOT Z3_INCLUDES)
-    message(FATAL_ERROR "Z3 not found!")
-endif()
+find_package(Z3 REQUIRED)
 message(STATUS "Found Z3: ${Z3_LIBRARIES}")
-message(STATUS "Z3 include dir: ${Z3_INCLUDES}")
+message(STATUS "Z3 include dir: ${Z3_INCLUDE_DIR}")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
-                    ${Z3_INCLUDES})
+                    ${Z3_INCLUDE_DIR})
 
 # checks if the test-suite is present, if it is then build bc files and add testing to cmake build
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Test-Suite")
@@ -87,7 +76,24 @@ add_subdirectory(tools)
 INSTALL(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     COMPONENT devel
-    DESTINATION include/svf
+    DESTINATION include
     FILES_MATCHING
     PATTERN "**/*.h"
     )
+
+INSTALL(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    COMPONENT devel
+    DESTINATION include
+    FILES_MATCHING
+    PATTERN "**/*.json"
+    )
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/svf.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/svf.pc
+    @ONLY
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/svf.pc
+        DESTINATION lib/pkgconfig)

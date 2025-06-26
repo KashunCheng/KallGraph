@@ -4,3 +4,5 @@ output/
 *.bc
 build2/
 input/v6.5/testfuncs
+.idea/
+.direnv/

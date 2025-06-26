@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: svf
+Description: SVF is a static value-flow analysis tool for LLVM-based languages.
+Version: 2.5
+Libs: -L${libdir} -lSvf -lCudd
+Cflags: -I${includedir}

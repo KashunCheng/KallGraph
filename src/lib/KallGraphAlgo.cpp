@@ -57,6 +57,7 @@ static inline bool isMemAllocFunction(const StringRef &name) {
 }
 
 void Algo::ComputeAlias(PAGNode *cur, bool state) {
+  cur->dump();
   nodeFreq[cur]++;
   counter++;
   auto param_it = Param2Funcs.find(cur->getId());
@@ -226,6 +227,7 @@ void Algo::ComputeAlias(PAGNode *cur, bool state) {
   if (state && cur->hasIncomingEdges(PAGEdge::Load)) {
     for (auto edge : cur->getIncomingEdges(PAGEdge::Load)) {
       auto srcNode = edge->getSrcNode();
+      srcNode->dump();
       PNwithOffset newTypeInfo(0, true);
       HistoryAwareStack.push(newTypeInfo);
       Prop(srcNode, edge, true, nullptr);

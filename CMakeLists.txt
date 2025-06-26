@@ -34,31 +34,31 @@ endif()
 
 if (EXISTS "${SVF_DIR}")
     #  MESSAGE(STATUS "FOOBAR env seen: --[${SVF_DIR}]--")
-
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+        MESSAGE (STATUS "building SVF in debug mode")
+        set(SVF_LIB "${SVF_DIR}/Debug-build/lib/libSvf.a")
+        set(LLVMCudd "${SVF_DIR}/Debug-build/lib/CUDD/libCudd.a")
+    else()
+        MESSAGE (STATUS "building SVF in release mode")
+        set(SVF_LIB "${SVF_DIR}/Release-build/lib/libSvf.a")
+        set(LLVMCudd "${SVF_DIR}/Release-build/lib/CUDD/libCudd.a")
+    endif()
+    set(SVF_HEADER "${SVF_DIR}/include")
 else()
     # MESSAGE(STATUS "FOOBAR env seen: --[$ENV{SVF_DIR}]--")
-
-    set(SVF_DIR $ENV{SVF_DIR})
-    if(EXISTS "${SVF_DIR}")
+    find_package(PkgConfig)
+    pkg_check_modules(SVF svf REQUIRED)
+    if(SVF_FOUND)
     else()
     message(FATAL_ERROR "\
 WARNING: The SVF_DIR var was not set (required for an out-of-source build)!\n\
 Please set this to environment variable to point to the SVF_DIR directory or set this variable to cmake configuration\n
 (e.g. on linux: export SVF_DIR=/path/to/SVF/dir) \n or \n \n(make the project via: cmake -DSVF_DIR=your_path_to_SVF) ")
     endif()
+    set(SVF_LIB "${SVF_LIBRARIES}")
+    set(SVF_HEADER "${SVF_INCLUDE_DIRS}")
 endif()
-
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    MESSAGE (STATUS "building SVF in debug mode")
-    set(SVF_LIB "${SVF_DIR}/Debug-build/lib/libSvf.a")
-    set(LLVMCudd "${SVF_DIR}/Debug-build/lib/CUDD/libCudd.a")
-else()
-    MESSAGE (STATUS "building SVF in release mode")
-    set(SVF_LIB "${SVF_DIR}/Release-build/lib/libSvf.a")
-    set(LLVMCudd "${SVF_DIR}/Release-build/lib/CUDD/libCudd.a")
-endif()
-set(SVF_HEADER "${SVF_DIR}/include")
-include_directories(${SVF_HEADER})
+include_directories(SVF_HEADER)
 
 #set z3 env
 if (DEFINED Z3_DIR)
